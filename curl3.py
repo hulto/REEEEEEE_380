@@ -291,6 +291,7 @@ class Crawler():
                 self.visited[i] = self.getDepth(i)
 
             arr = self.dump_queue(self.email_queue) 
+            print(arr)
             for i in arr:
                 print(i)
                 j = i.split(" ")
