@@ -233,7 +233,7 @@ class Crawler():
         # Clear the work_queue
         while(not self.work_queue.empty()):
             self.work_queue.get()
-
+        force_shutdown()
         sys.exit(1)
     
     def try_shutdown():
@@ -376,8 +376,8 @@ class Crawler():
                 while(job in self.visited or not self.check_scope(job, self.scope) or not self.check_depth(job, self.max_depth) or job is None):
                     job = self.work_queue.get()
                 
-                if VERBOSE_FLAG: print( "[%s] %s" % (str(os.getpid()), job) )
-                if VERBOSE_FLAG: print( "[%s] %d" % (str(os.getpid()), int(job in self.visited) ) )
+                if FLAG_VERBOSE: print( "[%s] %s" % (str(os.getpid()), job) )
+                if FLAG_VERBOSE: print( "[%s] %d" % (str(os.getpid()), int(job in self.visited) ) )
                 # Crawl the page extracting url and emails
                 self.crawl_page(job)
             except IndexError as e:
