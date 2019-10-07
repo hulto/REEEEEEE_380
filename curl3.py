@@ -262,7 +262,7 @@ class Crawler():
         # While the queue is not empty copy items to List
         while(not queue.empty()):
             try:
-                res.append(queue.get(False))
+                res.append(queue.get())
             except Exception as e:
                 print(e)
         
@@ -288,6 +288,7 @@ class Crawler():
             if(not self.email_queue.empty): print(self.email_queue.get(False))
             # Pass messages from queues to local data structures
             arr = self.dump_queue(self.visited_queue)
+            print(arr)
             for i in arr:
                 self.visited[i] = self.getDepth(i)
 
