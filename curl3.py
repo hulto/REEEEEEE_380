@@ -235,7 +235,7 @@ class Crawler():
     URL_REGEX = r"(http|https):\/\/([a-zA-Z\.]*\.([a-zA-Z]{2,24}))(:\d*)?([a-zA-Z0-9\/\.\-\_\~\!\$\&\'\(\)\*\+\,\;\=\:\@\?]*)"
     URL_REGEX_NO_ARGS = r"(http|https):\/\/([a-zA-Z\.]*\.([a-zA-Z]{2,24}))(:\d*)?([a-zA-Z0-9\/\.\-\_\~\!\$\&\'\(\)\*\+\,\;\=\:\@]*)"
 
-    MAX_WORKERS = 100
+    MAX_WORKERS = 500
     MAX_EMAILS = 1200
 
     # Number of seconds to wait with an empty queue before closing down workers
