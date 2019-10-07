@@ -10,7 +10,6 @@ import urllib
 import signal
 import sys
 import time
-from copy import copy
 
 FLAG_VERBOSE = False
 
@@ -21,6 +20,10 @@ proto_dict['http'] = 80
 proto_dict['https'] = 443
 proto_dict['ftp'] = 21
 
+"""class Response - Parse HTTP server reponse into usabel structures
+
+Reads in request dictionary and parses both the header and data fields.s
+"""
 class Response:
     proto = "http"
     ver = ""
@@ -47,17 +50,21 @@ class Response:
         self.status_code = resp_tmp[1]
         self.status_text = resp_tmp[2]
 
+
         self.resp['header'] = in_hdr
         self.resp['data'] = in_dat
 
-
+        # Save options as key value pairs in `hdr_options`
         for i in in_hdr[1:]:
             line = i.split(": ")
             if(len(line) == 2):
                 self.hdr_options[str(line[0])] = line[1]
 
         return None
+"""class Requests - Send HTTP requestst to the specified server
 
+Specify funciton (GET) to wrap sending data.
+"""
 class Requests:
     req_txt = ""                    \
     "%s %s HTTP/%s\r\n"             \
@@ -87,21 +94,27 @@ class Requests:
                 ver: str, host: str, port: int,
                 uagent: str, data: str, secure: bool):
         
+        # Remove excessive '/'s
         url = url.replace("//", "/")
         if ":" not in str(port):
             port = ":"+str(port)
-        
+         
+        # If port number is an normal value (80, or 443) we don't need to append it to the host.
         if(":443" == str(port) or ":80" == str(port)):
             port_str = ""
         else:
+            # Otherwise append to host value (eg. `Host: example.com:8080`)
             port_str = str(port)
 
+        # Build request text using format strings.
         self.req_txt = self.req_txt % (verb, url, ver, host + port_str, uagent)
 
+        # Are we sending data like a file upload in a POST.
         if data is not "":
             self.req_txt += "Content-Length: %d\r\n" % int(len(data))
             self.req_txt += "Content-Type: %s\r\n" % "application/x-www-form-urlencoded"
 
+        # Set options and flags
         self.secure = secure
         self.port = port
         self.url = url
@@ -111,35 +124,51 @@ class Requests:
         if data is not "":
             self.req_txt += data
 
+        # Send it!
         send_res = self.sendit()
 
+    """sendit() - Are you silly I'm still gonna send it
 
+    Sends requests out over the wire. Usese secure flag to decide whether or not to use SSL.
+    @return returns the dictionary res with 'header' and 'data' fields. This can be passed to Response to decode it.
+    """
     def sendit(self):
+        # setup SSL stuff just in case
         context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
         context.set_ciphers('ALL')
         host_ip = socket.gethostbyname(self.hostname)
 
+        # Establish handlers here so we can close them out side condition.
         sock = None
         s = None
         if self.secure:
+            # Create SSL connection
             sock = socket.create_connection((self.hostname, int(self.port.replace(":", ""))))
             s = context.wrap_socket(sock, server_hostname=self.hostname)
         else:
+            # Create a normal TCP connection
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
             s.connect((self.hostname, int(self.port.replace(":", ""))))
 
+        #Send bytes
         s.send(self.req_txt.encode('utf-8'))
+
         data = b''
         tmp = b''
+
+        # Recieve server response
         try:
+            # Read in all bytes
             tmp = s.recv(4096)
             while(tmp != b''):
                 data += tmp
                 tmp = s.recv(4096)
+            # Split header and data sections
             data = data.decode('utf-8').split('\r\n\r\n')
             self.res['header'] = data[0]
             self.res['data'] = data[1]
         except Exception as e:
+            # If things break, try to  close sockets and gracefully error
             if sock:
                 sock.close()
             if s:
@@ -152,6 +181,8 @@ class Requests:
                 print("=====")
                 print("[%s] Error: %s" (os.getpid(), str(e)))
                 print("=====")
+
+        # Close remaininng open sockets
         if sock:
             sock.close()
         if s:
@@ -159,26 +190,39 @@ class Requests:
         
         return self.res
   
-    def get(url: str, data: str="", agent: str="curl"): #-> Response:
+    """get(url: str, data: str="", agent: str="curl") -> Response - HTTP GET request
+
+    Performs a get request using the custom requests functions.
+    @return Returns a Response object made from the binary string respnose sent by the server.
+    """
+    def get(url: str, data: str="", agent: str="curl") -> Response:
         secure = False
+
+        # Chunk out the URL components
         arr = re.findall(URL_REGEX, url)
 
+        # re.find returns [('data1','data2')] data Tuple inside List
         if(len(arr) > 0):
             arr = arr[0]
 
+        # Make sure required fields are present
         if(len(arr) < 3):
             print("[-] Error no url")
             return None
 
+        # Splice out fields to respective variables
         proto = arr[0]
         host = arr[1]
+        path = arr[4]
+        # If proto is https set the secure flag
         if(arr[0] == "https"):
             secure = True
+
+        # Resolve port based on proto
         port = proto_dict[arr[0]]
         if(arr[3] != ''):
             port = arr[3]
-        path = arr[4]
-        
+                
         return Response(Requests("GET", "/"+path, "1.1", host, port, agent, data, secure))
 
 
@@ -236,7 +280,12 @@ class Crawler():
         force_shutdown()
         sys.exit(1)
     
+    """try_shutdown() - gracefully tries to shutdown
+
+    Check if the queue is empty. If so set exit variable and prevent future queue use
+    """
     def try_shutdown():
+        # While the queue is empty check if it's been like this for TIMEOUT_DELAY continuous seconds.
         last_check = datetime.now()
         while(self.work_queue.empty()):
             if(datetime.now() - last_check >= timedelta(seconds=self.TIMEOUT_DELAY)):
@@ -245,6 +294,8 @@ class Crawler():
                 work_queue.close()
                 break
 
+    """force_shutdown() - Forcefully clear the work queue
+    """
     def force_shutdown():
         print("Forceful shutdown")
         dump_queue(self.work_queue)
@@ -422,7 +473,7 @@ class Crawler():
         # Iterate through each
         for k in arr_emails:
             # Put extracted email with the depth it was found at on queue
-            self.email_queue.put("%s %d" % (str(k), self.getDepth(k)))
+            self.email_queue.put("%s %d" % (str(k), self.getDepth(url)))
         time.sleep(.5)
         # Return the emails that were found
         return self.found_emails
