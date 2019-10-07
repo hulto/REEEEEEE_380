@@ -261,7 +261,7 @@ class Crawler():
         print("Dumbing the queue")
         # While the queue is not empty copy items to List
         while(not queue.empty()):
-            res.append(self.work_queue.get(False))
+            if(not queue.empty): res.append(self.work_queue.get(False))
         return res
 
     """worker_watcher() - Show the current status of crawler
