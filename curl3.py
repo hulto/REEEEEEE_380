@@ -210,8 +210,8 @@ class Crawler():
         self.max_depth = max_depth
 
         # Local copies of the variables
-        self.visited = {}#self.manager.dict()
-        self.found_emails = {}#self.manager.dict()
+        self.visited = {}
+        self.found_emails = {}
 
         # Outbound and inbound job queues
         # Workers pass back what sites have been visited so dispatcher can copy them into the local dict
@@ -344,6 +344,17 @@ class Crawler():
             # Wait for proc to close
             p.join()
         monitor_process.join()
+
+        # Iterate through the depth levels
+        for i in range(self.max_depth):
+            # Open the output file for each depth
+            with open("depth_%s.out" % str(i), 'w+') as fp:
+                # Iterate through the keys in found_emails
+                for j in dict(self.found_emails):
+                    # If the value found using key j is equal to the current level: write out.
+                    if str(self.found_emails[j] == str(i)):
+                        fp.write("%s\n" % j)
+
         print("Exiting...")
 
     """worker() - Worker are the functions running each thread.
@@ -366,6 +377,7 @@ class Crawler():
                     job = self.work_queue.get()
                 
                 print( "[%s] %s" % (str(os.getpid()), job) )
+                print( "[%s] %d" % (str(os.getpid(), (job in self.visited) )) )
                 # Crawl the page extracting url and emails
                 self.crawl_page(job)
             except IndexError as e:
