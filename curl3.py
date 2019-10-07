@@ -376,8 +376,8 @@ class Crawler():
                 while(job in self.visited or not self.check_scope(job, self.scope) or not self.check_depth(job, self.max_depth) or job is None):
                     job = self.work_queue.get()
                 
-                print( "[%s] %s" % (str(os.getpid()), job) )
-                print( "[%s] %d" % (str(os.getpid()), int(job in self.visited) ) )
+                if VERBOSE_FLAG: print( "[%s] %s" % (str(os.getpid()), job) )
+                if VERBOSE_FLAG: print( "[%s] %d" % (str(os.getpid()), int(job in self.visited) ) )
                 # Crawl the page extracting url and emails
                 self.crawl_page(job)
             except IndexError as e:
