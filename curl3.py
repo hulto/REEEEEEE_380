@@ -377,7 +377,7 @@ class Crawler():
                     job = self.work_queue.get()
                 
                 print( "[%s] %s" % (str(os.getpid()), job) )
-                print( "[%s] %d" % (str(os.getpid(), (job in self.visited) )) )
+                print( "[%s] %d" % (str(os.getpid()), int(job in self.visited) ) )
                 # Crawl the page extracting url and emails
                 self.crawl_page(job)
             except IndexError as e:
