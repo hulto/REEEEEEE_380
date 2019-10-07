@@ -275,9 +275,8 @@ class Crawler():
         print("Keyboard interrupt\nExiting....")
         self.kill_signaled = True
         # Clear the work_queue
-        while(not self.work_queue.empty()):
-            self.work_queue.get()
-        force_shutdown()
+        self.dump_queue(self.work_queue)
+        self.force_shutdown()
         sys.exit(1)
     
     """try_shutdown() - gracefully tries to shutdown
@@ -539,7 +538,7 @@ class Crawler():
 #SCOPE_REGEX = r"[http|https]\:\/\/www\.rit\.edu.*"
 SCOPE_REGEX = r"[http|https]\:\/\/www\.rit\.edu\/[a-zA-Z0-9\/\.\-\_\~\!\$\&\'\(\)\*\+\,\;\=\:\@]*"
 if __name__ == "__main__":
-    #url = "https://www.rit.edu/directory?term_node_tid_depth=All"
-    url = "https://www.rit.edu/"
+    url = "https://www.rit.edu/directory?term_node_tid_depth=All"
+    #url = "https://www.rit.edu/"
     c = Crawler(url, SCOPE_REGEX, 4)
     print(c.worker_dispatch())
