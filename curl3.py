@@ -191,7 +191,7 @@ class Crawler():
     URL_REGEX = r"(http|https):\/\/([a-zA-Z\.]*\.([a-zA-Z]{2,24}))(:\d*)?([a-zA-Z0-9\/\.\-\_\~\!\$\&\'\(\)\*\+\,\;\=\:\@\?]*)"
     URL_REGEX_NO_ARGS = r"(http|https):\/\/([a-zA-Z\.]*\.([a-zA-Z]{2,24}))(:\d*)?([a-zA-Z0-9\/\.\-\_\~\!\$\&\'\(\)\*\+\,\;\=\:\@]*)"
 
-    MAX_WORKERS = 5
+    MAX_WORKERS = 1
     MAX_EMAILS = 1200
 
     # Number of seconds to wait with an empty queue before closing down workers
@@ -270,7 +270,8 @@ class Crawler():
     """
     def worker_watcher(self):
         while(True):
-            print("watching...")
+            time.sleep(.1)
+            print("Watching")
             # Check if kill all workers signal should be sent (max emails, work_queue empty, ctrl-C)
             if(len(self.found_emails) > self.MAX_EMAILS or self.can_exit):
                 # Clear the work_queue
@@ -278,8 +279,8 @@ class Crawler():
                 force_shutdown()
                 break
             #print("Watcher")
-            print(self.visited_queue.get())
-            print(self.email_queue.get())
+            if(not self.visited_queue.empty): print(self.visited_queue.get(False))
+            if(not self.email_queue.empty): print(self.email_queue.get(False))
             # Pass messages from queues to local data structures
             arr = self.dump_queue(self.visited_queue)
             for i in arr:
@@ -472,7 +473,8 @@ class Crawler():
         return len(target.split('/'))-1
 
 
-SCOPE_REGEX = r"[http|https]\:\/\/www\.rit\.edu.*"
+#SCOPE_REGEX = r"[http|https]\:\/\/www\.rit\.edu.*"
+SCOPE_REGEX = r"[http|https]\:\/\/www\.rit\.edu\/[a-zA-Z0-9\/\.\-\_\~\!\$\&\'\(\)\*\+\,\;\=\:\@]*"
 if __name__ == "__main__":
     #url = "https://www.rit.edu/directory?term_node_tid_depth=All"
     url = "https://www.rit.edu/"
