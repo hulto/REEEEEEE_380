@@ -283,7 +283,7 @@ class Crawler():
 
     Check if the queue is empty. If so set exit variable and prevent future queue use
     """
-    def try_shutdown():
+    def try_shutdown(self):
         # While the queue is empty check if it's been like this for TIMEOUT_DELAY continuous seconds.
         last_check = datetime.now()
         while(self.work_queue.empty()):
@@ -295,7 +295,7 @@ class Crawler():
 
     """force_shutdown() - Forcefully clear the work queue
     """
-    def force_shutdown():
+    def force_shutdown(self):
         print("Forceful shutdown")
         dump_queue(self.work_queue)
         self.can_exit = True
@@ -538,7 +538,7 @@ class Crawler():
 #SCOPE_REGEX = r"[http|https]\:\/\/www\.rit\.edu.*"
 SCOPE_REGEX = r"[http|https]\:\/\/www\.rit\.edu\/[a-zA-Z0-9\/\.\-\_\~\!\$\&\'\(\)\*\+\,\;\=\:\@]*"
 if __name__ == "__main__":
-    url = "https://www.rit.edu/directory?term_node_tid_depth=All"
-    #url = "https://www.rit.edu/"
+    #url = "https://www.rit.edu/directory?term_node_tid_depth=All"
+    url = "https://www.rit.edu/"
     c = Crawler(url, SCOPE_REGEX, 4)
     print(c.worker_dispatch())
