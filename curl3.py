@@ -258,11 +258,11 @@ class Crawler():
     """
     def dump_queue(self, queue: Queue) -> List:
         res = []
-        print("Dumbing the queue")
+        print("Dumping the queue")
         # While the queue is not empty copy items to List
         while(not queue.empty()):
             try:
-                tmp = queue.get(False)
+                res += queue.get(False)
             except Exception as e:
                 print(e)
         return res
