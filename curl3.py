@@ -400,7 +400,7 @@ class Crawler():
         # Load the page in question
         r = Requests.get(url)
         # Add url to visited (so we don't revisit it)
-        self.visited[url] = self.getDepth(url)
+        self.visited_queue.put(url)
         # Iterate through and add all urls
         for i in self.extract_urls(r.resp['data']):
             # Build url string for new links given regex extraction 
