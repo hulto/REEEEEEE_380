@@ -191,7 +191,7 @@ class Crawler():
     URL_REGEX = r"(http|https):\/\/([a-zA-Z\.]*\.([a-zA-Z]{2,24}))(:\d*)?([a-zA-Z0-9\/\.\-\_\~\!\$\&\'\(\)\*\+\,\;\=\:\@\?]*)"
     URL_REGEX_NO_ARGS = r"(http|https):\/\/([a-zA-Z\.]*\.([a-zA-Z]{2,24}))(:\d*)?([a-zA-Z0-9\/\.\-\_\~\!\$\&\'\(\)\*\+\,\;\=\:\@]*)"
 
-    MAX_WORKERS = 1
+    MAX_WORKERS = 100
     MAX_EMAILS = 1200
 
     # Number of seconds to wait with an empty queue before closing down workers
@@ -298,7 +298,7 @@ class Crawler():
             print("mon[%s] Visited %d sites" % (os.getpid(), len(self.visited)))
             print("mon[%s] Collected %d emails" % (os.getpid(), len(self.found_emails)))
             print(self.found_emails)
-            time.sleep(5)
+            time.sleep(1)
 
     """worker_dispatch() - Spawn workers and provide them with jobs
 
