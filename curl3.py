@@ -283,9 +283,7 @@ class Crawler():
                 dump_queue(self.work_queue)
                 force_shutdown()
                 break
-            #print("Watcher")
-            if(not self.visited_queue.empty): print(self.visited_queue.get(False))
-            if(not self.email_queue.empty): print(self.email_queue.get(False))
+
             # Pass messages from queues to local data structures
             arr = self.dump_queue(self.visited_queue)
             for i in arr:
@@ -296,12 +294,10 @@ class Crawler():
                 j = i.split(" ")
                 self.found_emails[j[0]] = j[1]
             
-            print(self.found_emails)
-            print(self.visited)   
-
             # Report on current work status
             print("mon[%s] Visited %d sites" % (os.getpid(), len(self.visited)))
             print("mon[%s] Collected %d emails" % (os.getpid(), len(self.found_emails)))
+            print(self.found_emails)
             time.sleep(5)
 
     """worker_dispatch() - Spawn workers and provide them with jobs
@@ -343,7 +339,6 @@ class Crawler():
             while(self.work_queue.empty()):
                 time.sleep(.1)
 
-        print(len(workers))            
         # Iterate through all workers
         for i in workers:
             # Wait for proc to close
