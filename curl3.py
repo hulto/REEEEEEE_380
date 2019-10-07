@@ -262,9 +262,10 @@ class Crawler():
         # While the queue is not empty copy items to List
         while(not queue.empty()):
             try:
-                res += queue.get(False)
+                res.append(queue.get(False))
             except Exception as e:
                 print(e)
+        
         return res
 
     """worker_watcher() - Show the current status of crawler
