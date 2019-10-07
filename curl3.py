@@ -269,6 +269,7 @@ class Crawler():
     """
     def worker_watcher(self):
         while(True):
+            print("watching...")
             # Check if kill all workers signal should be sent (max emails, work_queue empty, ctrl-C)
             if(len(self.found_emails) > self.MAX_EMAILS or self.can_exit):
                 # Clear the work_queue
