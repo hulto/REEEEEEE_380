@@ -261,7 +261,7 @@ class Crawler():
         print("Dumbing the queue")
         # While the queue is not empty copy items to List
         while(not queue.empty()):
-            res.append(self.work_queue.get())
+            res.append(self.work_queue.get(False))
         return res
 
     """worker_watcher() - Show the current status of crawler
@@ -274,6 +274,7 @@ class Crawler():
             print("Watching")
             # Check if kill all workers signal should be sent (max emails, work_queue empty, ctrl-C)
             if(len(self.found_emails) > self.MAX_EMAILS or self.can_exit):
+                print("worker_watcher - killing workers")
                 # Clear the work_queue
                 dump_queue(self.work_queue)
                 force_shutdown()
