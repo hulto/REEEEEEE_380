@@ -288,14 +288,11 @@ class Crawler():
             if(not self.email_queue.empty): print(self.email_queue.get(False))
             # Pass messages from queues to local data structures
             arr = self.dump_queue(self.visited_queue)
-            print(arr)
             for i in arr:
                 self.visited[i] = self.getDepth(i)
 
             arr = self.dump_queue(self.email_queue) 
-            print(arr)
             for i in arr:
-                print(i)
                 j = i.split(" ")
                 self.found_emails[j[0]] = j[1]
             
