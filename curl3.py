@@ -292,6 +292,7 @@ class Crawler():
 
             arr = self.dump_queue(self.email_queue) 
             for i in arr:
+                print(i)
                 j = i.split(" ")
                 self.found_emails[j[0]] = j[1]
             
